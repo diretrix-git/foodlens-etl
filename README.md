@@ -1,8 +1,44 @@
 # FoodLens: Food Nutrition Quality & Data Analysis ETL Pipeline
 
-University semester project. This phase implements extraction only: downloading,
-preserving source records, resumable pagination, and a compact analytical export.
-It does not implement a database, EDA, visualizations, or analytical reporting.
+University semester project. Phase 1 implements extraction, source preservation,
+resumable pagination, and analytical exports. Phase 2 adds a read-only exploratory
+notebook. Cleaning, database loading, and SQL reporting are not implemented.
+
+## Phase 2: exploratory data analysis
+
+Open `notebooks/01_eda.ipynb` using the project's `.venv` Python kernel. It reads
+`data/processed/food_products_analysis_combined_725f8a023f0f8ee6.csv` and checks its
+metadata, saved pages, and category checkpoints. Keep the complete Phase 1 data
+directory available locally; source data are intentionally excluded from Git.
+The notebook runs with its working directory at either the repository root or
+`notebooks/`. No absolute machine paths or live API access are required.
+
+Install the additional plotting/execution tools, then execute and validate from
+the project root:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-eda.txt
+.\.venv\Scripts\python.exe scripts/execute_eda.py
+```
+
+The executor starts a fresh kernel with the same `.venv` interpreter in each
+working directory. It checks all cells, seven embedded figures, and the hashes,
+sizes and modification times of all existing data files. It writes the executed
+notebook only after both runs pass. It does not need JupyterLab, Notebook Server
+or a globally registered kernel. In an interactive editor, explicitly select
+the `.venv` interpreter. Kernel startup may emit local IPython/Jupyter permission
+or transport warnings under a restricted Windows account; notebook errors still
+fail execution.
+
+The notebook covers the verified 2,000 source records / 1,987 unique products,
+24 fields, missingness, identities, category overlaps, brand strings, Nutri-Score,
+NOVA, nutrition summaries, internal consistency and category-specific IQR flags.
+Category comparisons use **all memberships**, with shared products counted once
+per category. Overall summaries use unique products. Seven figures include
+calculated interpretations. All numeric conversions and filtering are temporary
+EDA views; no cleaning, imputation or outlier removal is saved.
+
+See `reports/phase2_validation.md` for measured findings and execution evidence.
 
 ## Current saved data
 
@@ -22,8 +58,9 @@ content-addressed backup under `data/backups/legacy_<hash>/`.
 Run from the project root in PowerShell. A real contact email is required
 for live requests; it is used in the User-Agent and saved extraction metadata.
 
-The `.venv` uses Python 3.12.4 and all ten pinned dependencies from
-`requirements.txt`. Activate it normally; no `PYTHONPATH` workaround is needed:
+The `.venv` uses Python 3.12.4 and all ten Phase 1 dependencies from
+`requirements.txt`, plus the optional Phase 2 tools in `requirements-eda.txt`.
+Activate it normally; no `PYTHONPATH` workaround is needed:
 
 ```powershell
 Set-Location <path-to-foodlens-etl>
@@ -234,7 +271,8 @@ real `requests` HTTP calls raise an error. Deliberately malformed identifiers ar
 confined to test cases and never enter the project dataset. No extra test package
 is needed beyond Python's `unittest` and the downloader's `requests` dependency.
 
-The executed suite has **34 passing tests**, covering retryable status codes,
+The executed extraction suite has **36 passing tests**, covering category combination,
+completion checks, retryable status codes,
 exponential backoff, both Retry-After formats, persisted cooldowns, network errors,
 checkpoint recovery, missing/corrupt pages, legacy preservation, deduplication,
 invalid barcodes, CSV fields, atomic write failures, source exhaustion, page
