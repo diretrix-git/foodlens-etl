@@ -1,0 +1,48 @@
+# Virtual environments and local repair artifacts
+.venv/
+.venv-*/
+.venv-before-repair/
+.venv-replacement/
+.environment-repair/
+
+# Python caches, test output, and local tooling state
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Downloaded dependencies and temporary files
+*.whl
+wheels/
+downloads/
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Local extraction state
+data/.extraction.lock
+data/**/.extraction.lock
+data/**/checkpoint*.json
+data/**/request_cooldown.json
+data/**/extractions/
+
+# Raw, processed, and backup datasets
+data/raw/*
+data/processed/*
+data/backups/
