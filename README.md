@@ -2,7 +2,77 @@
 
 University semester project. Phase 1 implements extraction, source preservation,
 resumable pagination, and analytical exports. Phase 2 adds a read-only exploratory
-notebook. Cleaning, database loading, and SQL reporting are not implemented.
+notebook. Phase 3B adds an offline five-table cleaning and transformation pipeline.
+Database loading and SQL reporting are not implemented.
+
+## Phase 3B: cleaning and transformation
+
+From the repository root, using the existing virtual environment:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.clean_transform
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -m pip check
+```
+
+The transformer reads the combined CSV and preserved source pages, verifies their
+checksums and memberships, and creates `brands.csv`, `products.csv`,
+`categories.csv`, `product_categories.csv`, and `nutrition.csv` in `data/cleaned/`.
+No API access or new dependencies are needed. The outputs contain 525 primary
+brand labels, 1,987 products, four categories, 2,000 membership links, and 1,987
+nutrition rows. The simplified five-table design follows the Phase 3B request
+and supersedes the six-table proposal in `reports/phase3_cleaning_plan.md`.
+
+Names and brands receive NFC/whitespace normalization without case/fuzzy merging.
+The first nonempty comma-separated brand is the primary brand; full original
+names and brand strings remain in `products`. Barcodes stay exact strings.
+All category overlaps remain. Only the four extraction categories become entities;
+flattened source taxonomy strings are not split into new relationships.
+
+Nutrition uses neutral **per-100** names because saved source records confirm
+1,254 mass-basis products, five volume-basis products and 728 with unknown basis:
+
+- `reported_<nutrient>_per_100` preserves each original CSV observation as text.
+- `<nutrient>_per_100` is nullable numeric. Five individually implausible values
+  become null; original missing values remain missing.
+- `<nutrient>_flags` records numeric reasons separately from missingness.
+- `<nutrient>_eligible` requires a present numeric value with no numeric flag.
+  Unresolved cross-field values remain stored, but both implicated operands are
+  ineligible for strict analyses and derived ratios. No source is guessed correct.
+- `measurement_basis` is `100g`, `100ml` or `unknown`. For a strict per-100-g
+  comparison, filter **both** `measurement_basis == '100g'` and the relevant
+  nutrient's eligibility. For multiple nutrients, require every operand eligible.
+
+Reload with the provided helper to restore nullable dtypes and leading zeros:
+
+```python
+from src.clean_transform import reload_tables
+
+tables = reload_tables("data/cleaned")
+nutrition = tables["nutrition"]
+strict_energy = nutrition.loc[
+    nutrition["measurement_basis"].eq("100g") & nutrition["energy_kcal_eligible"],
+    ["barcode", "energy_kcal_per_100"],
+]
+```
+
+When reading CSVs directly, use `dtype="string", keep_default_na=False,
+na_values=[""]` first, then explicitly convert intended numeric/Boolean columns.
+CSV blanks represent nulls, not zeros. Do not rely on spreadsheet barcode inference.
+Protein per 100 kcal and sugar/carbohydrate ratios require eligible operands,
+positive denominators and a known common basis. Completeness counts reported
+values in eight fields (kcal plus seven gram nutrients), excluding duplicate kJ
+energy coverage. It is not a food health score.
+
+Identical reruns verify and reuse existing output files without rewriting them.
+Differing existing outputs cause a safe stop; the command never silently replaces
+them. CSV writes are atomic per file, not across all five. After an interrupted
+first run, rerun the command to finish missing files and validate the complete set.
+Wait for the successful validation message before using outputs. Existing raw,
+processed, checkpoint, backup and notebook files remain unchanged.
+
+See `reports/phase3_validation.md` for schemas, precise thresholds, measured
+missingness, exclusions, source limitations and executed validation results.
 
 ## Phase 2: exploratory data analysis
 
@@ -231,17 +301,19 @@ The 21 columns are:
 | Fields | Meaning |
 | --- | --- |
 | `barcode`, `product_name`, `brands`, `categories` | Product identity; category tags separated by semicolons |
-| `energy_kcal_100g`, `energy_kj_100g` | API energy values per 100 g |
-| `protein_g_100g`, `carbohydrates_g_100g`, `sugars_g_100g` | API macronutrient values per 100 g |
-| `fat_g_100g`, `saturated_fat_g_100g`, `fiber_g_100g`, `salt_g_100g` | API nutrient values per 100 g |
+| `energy_kcal_100g`, `energy_kj_100g` | Reported API energy values; verify source mass/volume basis |
+| `protein_g_100g`, `carbohydrates_g_100g`, `sugars_g_100g` | Reported API macronutrient values; verify source mass/volume basis |
+| `fat_g_100g`, `saturated_fat_g_100g`, `fiber_g_100g`, `salt_g_100g` | Reported API nutrient values; verify source mass/volume basis |
 | `nutriscore_grade`, `nova_group` | Valid grades a-e and NOVA groups 1-4 |
 | `source_page`, `source_record_index`, `extracted_at_utc` | Traceability; record index is zero-based |
 | `source_url`, `record_origin`, `extraction_id` | Request URL, API/legacy origin, configuration ID |
 
 Only explicit API `_100g` nutrient values are exported. No missing values are
 filled, no serving conversions are inferred, and missing/negative/non-finite
-nutrient values become blank cells. Zero remains zero. For future liquid-product
-filters, verify whether OFF's `_100g` basis means 100 ml before analysis.
+nutrient values become blank cells. Zero remains zero. Phase 3B recovered explicit
+100 ml and unknown bases in this sample; the historical `_100g` column suffix
+alone does not verify a mass basis. Existing exports and EDA outputs remain
+unchanged; use the cleaned basis/eligibility fields for strict comparisons.
 
 Usable barcodes are exact ASCII digit strings of length 8-14. Leading zeroes
 are preserved. Blank/missing codes and malformed/non-string codes are excluded
