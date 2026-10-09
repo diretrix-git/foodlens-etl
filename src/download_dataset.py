@@ -31,6 +31,12 @@ ANALYSIS_FIELDS = [
     "nutriscore_grade", "nova_group", "source_page", "source_record_index",
     "extracted_at_utc", "source_url", "record_origin", "extraction_id",
 ]
+COMBINED_FIELDS = ANALYSIS_FIELDS + [
+    "extraction_category", "extraction_categories", "category_membership_count",
+]
+VERIFIED_CATEGORIES = {
+    "breakfast-cereals", "yogurts", "biscuits", "cereal-bars",
+}
 
 
 class ExtractionError(Exception):
@@ -180,6 +186,88 @@ def analytical_records(pages, extraction_id):
             rows.append(row)
     counts["unique_products"] = len(rows)
     return rows, issues, counts
+
+
+def combine_categories(data_dir, categories, output_path=None):
+    """Merge completed category snapshots without making network requests."""
+    categories = [category.strip() for category in categories if category.strip()]
+    if not categories or len(categories) != len(set(categories)):
+        raise ExtractionError("Provide each category once with --combine-categories.")
+    unknown = set(categories) - VERIFIED_CATEGORIES
+    if unknown:
+        raise ExtractionError(f"Unverified category identifier(s): {', '.join(sorted(unknown))}")
+
+    category_rows = {}
+    category_counts = {}
+    category_issues = {}
+    for category in categories:
+        config = make_config(category)
+        extraction_id = digest(json_bytes(config))[:16]
+        root = Path(data_dir) / "raw" / "extractions" / extraction_id
+        if not (root / "checkpoint.json").exists():
+            raise ExtractionError(
+                f"No checkpoint found for {category}; extract it before combining."
+            )
+        store = Store(data_dir, config)
+        checkpoint = read_json(store.checkpoint_path)
+        rows, issues, counts = analytical_records(store.pages, extraction_id)
+        if checkpoint.get("status") != "complete" or len(rows) < checkpoint.get("target_unique_products", 0):
+            raise ExtractionError(f"Category {category} is not complete; resume it before combining.")
+        for row in rows:
+            row["extraction_category"] = category
+        category_rows[category] = rows
+        category_counts[category] = counts
+        category_issues[category] = issues
+
+    merged = {}
+    memberships = {}
+    for category in categories:
+        for row in category_rows[category]:
+            barcode = row["barcode"]
+            memberships.setdefault(barcode, set()).add(category)
+            if barcode not in merged:
+                merged[barcode] = row
+    for barcode, row in merged.items():
+        category_memberships = sorted(memberships[barcode], key=categories.index)
+        row["extraction_category"] = category_memberships[0]
+        row["extraction_categories"] = ";".join(category_memberships)
+        row["category_membership_count"] = len(category_memberships)
+
+    if output_path is None:
+        identity = {"categories": categories, "page_size": 100}
+        combined_id = digest(json_bytes(identity))[:16]
+        output_path = Path(data_dir) / "processed" / f"food_products_analysis_combined_{combined_id}.csv"
+    else:
+        output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    stream = io.StringIO(newline="")
+    writer = csv.DictWriter(stream, fieldnames=COMBINED_FIELDS)
+    writer.writeheader()
+    writer.writerows(merged.values())
+    csv_data = stream.getvalue().encode("utf-8")
+    atomic_write(output_path, csv_data)
+
+    unique_products = len(merged)
+    category_unique_products = sum(counts["unique_products"] for counts in category_counts.values())
+    metadata = {
+        "schema_version": 1,
+        "categories": categories,
+        "category_counts": category_counts,
+        "category_issues": category_issues,
+        "raw_records": sum(counts["raw_records"] for counts in category_counts.values()),
+        "unique_products_by_category": {
+            category: counts["unique_products"] for category, counts in category_counts.items()
+        },
+        "unique_products": unique_products,
+        "overlapping_products": category_unique_products - unique_products,
+        "overlap_product_count": sum(1 for values in memberships.values() if len(values) > 1),
+        "missing_barcodes": sum(counts["missing_barcodes"] for counts in category_counts.values()),
+        "output_csv": str(output_path.resolve()),
+        "output_csv_sha256": digest(csv_data),
+        "analysis_columns": COMBINED_FIELDS,
+    }
+    save_json(output_path.with_suffix(".json"), metadata)
+    return metadata
 
 
 def validate_response(payload, page, page_size):
@@ -469,6 +557,8 @@ def parse_args(argv=None):
     parser.add_argument("--max-wait", type=float, default=300, help="Stop instead of sleeping beyond this cooldown; never ignore Retry-After")
     parser.add_argument("--import-legacy", action="store_true", help="Import the known saved 100-record page 1 once")
     parser.add_argument("--offline", action="store_true", help="Recover checkpoint and rebuild CSV without any API calls")
+    parser.add_argument("--combine-categories", help="Comma-separated completed categories to merge offline")
+    parser.add_argument("--combined-output", type=Path, help="Optional output path for a combined analytical CSV")
     args = parser.parse_args(argv)
     if not (1 <= args.page_size <= 100 and args.target > 0 and args.max_pages > 0 and 0 <= args.max_retries <= 10):
         parser.error("Require page-size 1-100, positive target/max-pages and max-retries 0-10.")
@@ -476,7 +566,9 @@ def parse_args(argv=None):
         parser.error("Timing settings must be finite and positive; interval must be at least 10 seconds.")
     if not args.category.strip():
         parser.error("category cannot be empty")
-    if not args.offline and (not args.contact_email or not re.fullmatch(r"[^\s@()<>]+@[^\s@()<>]+\.[^\s@()<>]+", args.contact_email)
+    if args.combine_categories and (args.import_legacy or args.combined_output and not args.combined_output.name.endswith(".csv")):
+        parser.error("--combine-categories cannot be used with --import-legacy and requires a .csv output path")
+    if not args.offline and not args.combine_categories and (not args.contact_email or not re.fullmatch(r"[^\s@()<>]+@[^\s@()<>]+\.[^\s@()<>]+", args.contact_email)
                              or args.contact_email.endswith("@example.com")):
         parser.error("Set --contact-email or FOODLENS_CONTACT_EMAIL to your real contact email.")
     return args
@@ -485,10 +577,20 @@ def parse_args(argv=None):
 def main(argv=None):
     args = parse_args(argv)
     try:
-        checkpoint = run(args)
+        if args.combine_categories:
+            checkpoint = combine_categories(
+                args.data_dir, args.combine_categories.split(","), args.combined_output
+            )
+        else:
+            checkpoint = run(args)
     except (ExtractionError, OSError, ValueError, KeyError, TypeError) as error:
         print(f"Extraction incomplete: {error}. Saved raw files are retained; recover with --offline after fixing the cause.", file=sys.stderr)
         return 1
+    if args.combine_categories:
+        print(f"Combined {len(checkpoint['categories'])} categories: "
+              f"{checkpoint['unique_products']} unique products.\n"
+              f"Analysis CSV: {checkpoint['output_csv']}")
+        return 0
     print(f"Extraction {checkpoint['status']}: {checkpoint['reason']}; "
           f"{checkpoint['row_counts']['unique_products']}/{args.target} unique products.\n"
           f"Analysis CSV: {checkpoint['analysis_csv']}")

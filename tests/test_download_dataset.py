@@ -229,6 +229,39 @@ class ExtractionTests(unittest.TestCase):
         third = d.Store(self.root, d.make_config(page_size=50))
         self.assertEqual(len({first.root, second.root, third.root}), 3)
 
+    def test_combine_categories_merges_duplicates_and_reports_overlap(self):
+        first_product = copy.deepcopy(self.products[0])
+        second_product = copy.deepcopy(self.products[1])
+        yogurt = d.Store(self.root, d.make_config(category="yogurts"))
+        yogurt.commit_page({"products": [first_product, second_product]}, 1)
+        yogurt.publish(2, "offline", self.policy)
+
+        biscuits = d.Store(self.root, d.make_config(category="biscuits"))
+        biscuit_product = copy.deepcopy(first_product)
+        biscuit_product["product_name"] = "Category-specific duplicate"
+        biscuits.commit_page({"products": [biscuit_product]}, 1)
+        biscuits.publish(1, "offline", self.policy)
+
+        result = d.combine_categories(self.root, ["yogurts", "biscuits"])
+        self.assertEqual(result["raw_records"], 3)
+        self.assertEqual(result["unique_products"], 2)
+        self.assertEqual(result["overlapping_products"], 1)
+        self.assertEqual(result["overlap_product_count"], 1)
+        with Path(result["output_csv"]).open(encoding="utf-8", newline="") as stream:
+            rows = list(csv.DictReader(stream))
+        self.assertEqual(len(rows), 2)
+        duplicate = next(row for row in rows if row["barcode"] == first_product["code"])
+        self.assertEqual(duplicate["product_name"], first_product.get("product_name", ""))
+        self.assertEqual(duplicate["extraction_categories"], "yogurts;biscuits")
+        self.assertEqual(duplicate["category_membership_count"], "2")
+
+    def test_combine_categories_requires_completed_checkpoints(self):
+        store = d.Store(self.root, d.make_config(category="yogurts"))
+        store.commit_page({"products": self.products[:1]}, 1)
+        store.publish(2, "offline", self.policy)
+        with self.assertRaisesRegex(d.ExtractionError, "not complete"):
+            d.combine_categories(self.root, ["yogurts"])
+
     def test_deduplication_and_invalid_barcodes_preserve_raw(self):
         products = copy.deepcopy(self.products[:5])
         products[1]["code"] = products[0]["code"]

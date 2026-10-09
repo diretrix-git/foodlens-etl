@@ -6,11 +6,11 @@ It does not implement a database, EDA, visualizations, or analytical reporting.
 
 ## Current saved data
 
-The original extraction saved **100 products from page 1**, then stopped on a
-page-2 HTTP 503. The original JSON and 313-column flattened CSV are retained
-unchanged. They have been imported offline into extraction `255549a7a8a480c0`.
-Its checkpoint marks page 1 completed, page 2 next, and **100/500 unique products,
-incomplete**. No additional product API requests were made during this upgrade.
+The breakfast-cereals extraction contains **500 unique products** in its
+independent checkpoint `255549a7a8a480c0`. Its raw page snapshots, manifest,
+checkpoint, and analytical export are retained unchanged. Additional categories
+use different configuration-derived extraction IDs and never reuse this
+checkpoint.
 
 Before editing the script, the original script and both datasets were copied to
 `data/backups/pre_extraction_upgrade_20261009T040156Z/`. Its `manifest.json`
@@ -22,7 +22,7 @@ content-addressed backup under `data/backups/legacy_<hash>/`.
 Run from the project root in PowerShell. A real contact email is required
 for live requests; it is used in the User-Agent and saved extraction metadata.
 
-The repaired `.venv` uses Python 3.12.4 and all ten pinned dependencies from
+The `.venv` uses Python 3.12.4 and all ten pinned dependencies from
 `requirements.txt`. Activate it normally; no `PYTHONPATH` workaround is needed:
 
 ```powershell
@@ -40,22 +40,6 @@ it applies only to the current shell and does not change the user or machine pol
 You can also run `.\.venv\Scripts\python.exe` directly without activating.
 The extraction script itself only needs `requests`; pandas and NumPy are also
 installed for later project phases. `requirements.txt` remains unchanged.
-
-The old environment is preserved in `.venv-before-repair/`. Its Python 3.13
-interpreter exists on the machine, but was inaccessible inside the restricted
-execution sandbox. Some activation scripts also referenced the former project
-the former project environment. The old packages include Python 3.13
-binaries, so changing `pyvenv.cfg` alone would not safely switch Python versions.
-
-The safe recreation procedure is to create a separate candidate environment,
-install the full requirements and run the offline tests there, then preserve
-the old environment and create a fresh `.venv` at its final path. Reinstall the
-dependencies and verify again at that path. Do not rename a working candidate
-into place: environment scripts can embed absolute paths, as explained in the
-[Python venv documentation](https://docs.python.org/3.12/library/venv.html#how-venvs-work).
-The validated candidate `.venv-replacement/` and downloaded Python 3.12 wheels
-in `.environment-repair/wheels/` were retained. These local repair directories
-are excluded by `.gitignore`.
 
 The same command resumes automatically. It will not request completed pages.
 The target is a stopping threshold: the last successful page is retained in
@@ -78,12 +62,53 @@ does not add records again. The original extraction timestamp and full response
 envelope were never saved, so imported rows have a blank extraction timestamp
 and an explicit `legacy_import` origin. The import time is recorded separately.
 
+## Multi-category extraction
+
+The verified Open Food Facts taxonomy identifiers are:
+
+| Category | Identifier | Target |
+| --- | --- | ---: |
+| Breakfast cereals | `breakfast-cereals` | 500 |
+| Yogurts | `yogurts` | 500 |
+| Biscuits | `biscuits` | 500 |
+| Cereal bars | `cereal-bars` | 500 |
+
+The category identifier is part of the extraction configuration and checkpoint
+identity. The completed breakfast-cereals checkpoint is reused and does not
+trigger another request. Download only the additional categories:
+
+```powershell
+python src/download_dataset.py --category yogurts --target 500
+python src/download_dataset.py --category biscuits --target 500
+python src/download_dataset.py --category cereal-bars --target 500
+```
+
+Each command writes independent raw page snapshots, manifests, checkpoints, and
+per-category analytical CSV output. Use the same command again to resume an
+interrupted category; completed categories are not downloaded again.
+
+After all four category checkpoints are complete, combine them without network
+access:
+
+```powershell
+python src/download_dataset.py --combine-categories breakfast-cereals,yogurts,biscuits,cereal-bars
+```
+
+The combined output has 24 columns, including the analytical nutrient fields,
+the original `categories` taxonomy tags, the extraction category,
+`extraction_categories`, and `category_membership_count`. Products are globally
+deduplicated by exact barcode; the first category's row supplies the retained
+product/nutrient values and all category memberships are merged. The adjacent
+JSON metadata file reports raw records, per-category unique products, missing
+barcodes, duplicate/invalid barcode issues, and overlapping products. The
+combiner only reads saved checkpoints/pages and never makes API requests.
+
 ## Request behavior
 
 - Source: `https://world.openfoodfacts.org/api/v2/search`.
-- Original filter: `categories_tags_en=breakfast-cereals`; page size 100;
-  original requested fields preserved. No explicit sort was present in the old
-  query, so the API's default order is retained.
+- Category filter: `categories_tags_en=<category>`; page size 100; original
+  requested fields preserved. No explicit sort is used, so the API's default
+  order is retained.
 - Target: 500 unique usable barcodes. Default budget: 20 completed pages in total,
   including earlier runs. This prevents endlessly fetching duplicate-only pages.
 - User-Agent: `FoodLensStudentProject/2.0 (your-contact-email)`.
