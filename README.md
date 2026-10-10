@@ -3,7 +3,39 @@
 University semester project. Phase 1 implements extraction, source preservation,
 resumable pagination, and analytical exports. Phase 2 adds a read-only exploratory
 notebook. Phase 3B adds an offline five-table cleaning and transformation pipeline.
+Phase 4 answers five nutritional analysis questions in an executed notebook.
 Database loading and SQL reporting are not implemented.
+
+## Phase 4: data analysis and insights
+
+Run the analysis from the repository root with the existing notebook dependencies:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/execute_analysis.py
+```
+
+This executes `notebooks/02_data_analysis.ipynb` using fresh kernels with the
+project interpreter, once from the repository root and once from `notebooks/`.
+It saves the executed notebook after both runs pass and exports five PNG charts
+to `reports/figures/phase4_*.png`. It checks all cells, five embedded figures,
+identical exported chart hashes across runs, and preservation of every data file
+and the Phase 2 notebook. No global kernel registration or `PYTHONPATH` workaround
+is needed. For interactive execution, select the `.venv` kernel and run all cells
+from either supported working directory. If setting up a new environment, the
+existing `requirements-eda.txt` contains the required notebook/plotting tools.
+
+The notebook reads all five cleaned CSVs without regenerating them. Its questions
+cover category median sugars and protein, the top ten protein-per-100-kcal ratios,
+reported nutritional completeness, and Nutri-Score distributions. Per-100-g
+comparisons require confirmed mass basis and the relevant eligibility flag.
+Ratios require eligible operands, positive kcal and a known common mass or volume
+basis. Overall rankings use unique products; category summaries use all memberships.
+Completeness and grade distributions include all 500 memberships per category.
+Unknown and not-applicable Nutri-Score states stay separate and in the denominator.
+
+See `reports/phase4_validation.md` for the five numerical answers, sample sizes,
+limitations and actual execution/test results. These are descriptive results for
+the saved nonrandom sample, not health rankings or market-wide estimates.
 
 ## Phase 3B: cleaning and transformation
 
