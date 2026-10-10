@@ -11,6 +11,27 @@ verification and an identical rerun, with 6,503 rows across the five tables.
 See the Phase 6 validation report for the final live results and evidence history.
 Phase 7 implements eight read-only SQL reports extracting insights from the database.
 
+## Final academic submission
+
+All seven technical phases are implemented. See the complete editable
+[final report](reports/FoodLens_Final_Report.md),
+[submission instructions](SUBMISSION_README.md), and
+[final verification record](reports/submission_validation.md).
+The submission package is generated separately under `submission/`; it includes
+the required saved sources and cleaned datasets that Git ignores. A Git checkout
+alone does not contain those inputs. No fresh API download is required.
+
+The final audit corrected Phase 7 narrative figures for Q6-Q8 against the existing
+SQL exports. Verify all eight saved results without connecting to a database:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/verify_saved_results.py
+```
+
+DOCX/PDF export could not be reliably rendered in the available environment;
+the full Markdown report includes relative links to all five charts and the ERD.
+Complete its cover placeholders and check your institution's submission rules.
+
 ## Phase 6: load cleaned data into Neon PostgreSQL
 
 The loader uses Pandas, Psycopg 3 and python-dotenv with the existing

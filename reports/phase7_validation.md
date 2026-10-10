@@ -86,25 +86,42 @@ All queries respect Phase 3 cleaning and measurement-eligibility policies. Unrel
 
 ### Q6: NOVA processing classification by category
 *Goal: How do NOVA processing classifications differ by category?*
-- **Biscuits**: 97.4% ultra-processed (NOVA 4) among classified.
-- **Breakfast cereals**: 80.0% ultra-processed (NOVA 4) among classified.
-- **Cereal bars**: 91.5% ultra-processed (NOVA 4) among classified.
-- **Yogurts**: 63.8% ultra-processed (NOVA 4) among classified.
+- **Biscuits**: 85.3% NOVA 4 among classified (413/484).
+- **Breakfast cereals**: 54.1% NOVA 4 among classified (262/484).
+- **Cereal bars**: 91.0% NOVA 4 among classified (437/480).
+- **Yogurts**: 55.6% NOVA 4 among classified (234/421).
 
 ### Q7: Brands with the most products
 *Goal: Which brands have the most products (minimum > 5)?*
-1. **Carrefour**: 91 products
-2. **U**: 70 products
-3. **Auchan**: 51 products
-4. **Gerblé**: 43 products
-5. **Lu**: 38 products
+1. **Nestlé**: 70 products
+2. **Gerblé**: 69 products
+3. **Danone**: 65 products
+4. **MERCADONA**: 64 products
+5. **Bjorg**: 56 products
 
 ### Q8: Missing or flagged nutritional measurements by category
 *Goal: Which categories have the most missing or flagged nutritional measurements?*
-- **Yogurts**: Highest average missing nutrients (1.00/9 per product) and the highest flagged percentage (11.4%).
-- **Biscuits**: 0.31 missing on average; 9.4% flagged.
-- **Cereal bars**: 0.22 missing on average; 13.0% flagged.
-- **Breakfast cereals**: 0.15 missing on average; 9.2% flagged.
+- **Yogurts**: Highest mean cleaned numeric null count (0.93/9 per product); 6.0% flagged (30/500).
+- **Biscuits**: 0.31 numeric nulls on average; 3.6% flagged (18/500).
+- **Cereal bars**: 0.14 numeric nulls on average; highest flagged share at 6.4% (32/500).
+- **Breakfast cereals**: 0.12 numeric nulls on average; 2.2% flagged (11/500).
+
+Numeric null counts include both source omissions and individually excluded values.
+They cover nine fields, while reported completeness uses eight fields and retains
+flagged reported observations.
+
+### Final submission correction on 10 October 2026
+
+The Q6, Q7 and Q8 prose above was corrected during final preparation because the
+earlier narrative disagreed with the saved CSVs. `scripts/verify_saved_results.py`
+independently recomputed all eight result sets from the cleaned data: all 54 rows
+and 328 cells agreed. The CSVs, SQL and datasets were not modified. This offline
+reconciliation is separate from the historical live execution described below;
+no new API request or database connection was made for the correction.
+
+Technique clarification: Q5 and Q6 actually use INNER JOINs. Q4 uses a LEFT JOIN
+for brands and reads the previously guarded ratio; NULLIF is used directly in
+percentage queries, not to recalculate the ratio in Q4.
 
 ## Live Neon Execution Status and Verification
 

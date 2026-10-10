@@ -49,3 +49,6 @@ data/backups/
 
 # Generated ETL datasets
 /data/cleaned/
+
+# Separate submission copies and archive include intentionally untracked datasets
+/submission/
