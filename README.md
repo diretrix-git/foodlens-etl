@@ -4,7 +4,54 @@ University semester project. Phase 1 implements extraction, source preservation,
 resumable pagination, and analytical exports. Phase 2 adds a read-only exploratory
 notebook. Phase 3B adds an offline five-table cleaning and transformation pipeline.
 Phase 4 answers five nutritional analysis questions in an executed notebook.
+Phase 5 defines the PostgreSQL schema and a detailed, editable ERD.
 Database loading and SQL reporting are not implemented.
+
+## Phase 5: PostgreSQL schema and ERD
+
+The five tables map directly to all 65 columns in the cleaned CSVs: `brands`,
+`products`, `categories`, `product_categories`, and `nutrition`. See
+[the schema](sql/schema.sql), [the ERD](reports/erd.png),
+[editable DBML](reports/erd.dbml), and [validation report](reports/phase5_validation.md).
+Barcodes remain text, missing measurements remain nullable, and reported nutrient
+strings and review flags are retained. No product records are loaded in Phase 5.
+
+With PostgreSQL installed and its command-line tools available, run from the
+repository root using an account allowed to create databases and tables:
+
+```powershell
+createdb -U postgres foodlens
+psql -X -U postgres -d foodlens -v ON_ERROR_STOP=1 -f sql/schema.sql
+```
+
+Use your configured PostgreSQL role in place of `postgres`; let the client prompt
+for a password if required. The database must be fresh. The schema runs in one
+transaction and intentionally fails if tables already exist, rather than hiding
+schema differences. It creates five empty tables and supporting indexes in `public`.
+It contains no record-loading commands. PostgreSQL was unavailable during Phase 5
+validation, so actual PostgreSQL execution remains unverified.
+
+The product-to-nutrition relationship is exactly one-to-one at commit, enforced
+by reciprocal barcode FKs. A composite FK also requires each product's primary
+category to exist among its memberships. These two product-side FKs are deferred:
+the future Phase 6 loader must insert products, memberships and nutrition within
+one transaction. No loader is implemented here.
+
+Reproduce the ERD and run offline validation with the existing environment:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/generate_erd.py
+.\.venv\Scripts\python.exe scripts/validate_phase5.py
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+git diff --check
+```
+
+The renderer reads the SQL and writes DBML plus a high-resolution PNG using the
+existing Matplotlib dependency. SQL is authoritative; edit it and regenerate both
+ERD files. The offline validator checks CSV mappings, types, keys, nullability and
+translated scalar CHECK expressions; it does not substitute for PostgreSQL DDL
+execution. DBML records deferred-FK semantics in notes because DBML cannot express
+transaction timing. No external diagram service or API is used.
 
 ## Phase 4: data analysis and insights
 
