@@ -46,3 +46,6 @@ data/**/extractions/
 data/raw/*
 data/processed/*
 data/backups/
+
+# Generated ETL datasets
+/data/cleaned/
