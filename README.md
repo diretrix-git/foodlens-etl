@@ -5,7 +5,121 @@ resumable pagination, and analytical exports. Phase 2 adds a read-only explorato
 notebook. Phase 3B adds an offline five-table cleaning and transformation pipeline.
 Phase 4 answers five nutritional analysis questions in an executed notebook.
 Phase 5 defines the PostgreSQL schema and a detailed, editable ERD.
-Database loading and SQL reporting are not implemented.
+Phase 6 implements safe PostgreSQL loading and complete content verification.
+Phase 6 is complete: the project owner reports a successful Neon load, full content
+verification and an identical rerun, with 6,503 rows across the five tables.
+See the Phase 6 validation report for the final live results and evidence history.
+Phase 7 implements eight read-only SQL reports extracting insights from the database.
+
+## Phase 6: load cleaned data into Neon PostgreSQL
+
+The loader uses Pandas, Psycopg 3 and python-dotenv with the existing
+`sql/schema.sql`. It defaults to **read-only verification**. It checks the live
+columns, types, nullability, primary/unique/foreign keys, FK timing/actions and
+CHECK expressions before any inserts. A schema mismatch stops for manual review;
+the loader never creates or alters tables. See [Phase 6 validation](reports/phase6_validation.md).
+
+Run these commands from the repository root. The saved source pages and processed
+data must be available locally; no new Open Food Facts extraction is needed:
+
+```powershell
+# For a fresh checkout only, create the environment if it does not exist:
+# py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m src.clean_transform
+.\.venv\Scripts\python.exe -m src.load_postgres --offline
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -m pip check
+
+# Create a local template only if .env does not already exist:
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+notepad .env
+```
+
+Replace the entire placeholder `DATABASE_URL` with the private PostgreSQL URL
+from Neon's Connect dialog (database `neondb`). Do not paste credentials into chat,
+source code, screenshots or reports. `.env` is ignored by Git. An existing process
+environment variable takes precedence over `.env`; dotenv interpolation is disabled
+to preserve literal password characters. Missing, incomplete and placeholder URLs
+stop before connecting. The loader requires explicit TLS, strengthens
+`sslmode=require`/`verify-ca` to `verify-full`, and defaults to the CA bundle from
+the already-installed `certifi` package. Explicit `sslrootcert` in the URL takes
+precedence over `PGSSLROOTCERT`; either overrides the default. This avoids a
+verified Windows/libpq failure with `sslrootcert=system`, without weakening TLS.
+Other URL settings, including channel binding and the selected endpoint/database,
+are preserved. Failures identify the operation, a safe diagnostic and SQLSTATE
+when available, without printing URLs or raw database exceptions. This verifies
+the certificate and hostname as described in the
+[PostgreSQL TLS documentation](https://www.postgresql.org/docs/17/libpq-ssl.html).
+
+**Schema setup is only for a fresh database.** The existing Neon tables were
+already created successfully according to the project owner; skip this step there.
+For a fresh Neon database, run the complete `sql/schema.sql` in its SQL Editor.
+Alternatively, with PostgreSQL 17+ client tools installed, use placeholders for
+your host/role and enter the password at the prompt:
+
+```powershell
+$env:PGSSLMODE = 'verify-full'
+$env:PGSSLROOTCERT = (& .\.venv\Scripts\python.exe -c "import certifi; print(certifi.where())")
+$env:PGCHANNELBINDING = 'require'
+psql -X -h YOUR_NEON_HOST -U YOUR_NEON_ROLE -d neondb -W -v ON_ERROR_STOP=1 -f sql/schema.sql
+```
+
+Then inspect the configured database safely:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.load_postgres --verify-only
+```
+
+An `empty` result means all five tables are empty and compatible. After explicitly
+approving the live load, execute:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.load_postgres --load
+.\.venv\Scripts\python.exe -m src.load_postgres --verify-only
+.\.venv\Scripts\python.exe -m src.load_postgres --load
+```
+
+For a fresh reproduction, the first load should report `loaded`; both following commands should report
+`identical`, with 525 brands, 4 categories, 1,987 products, 2,000 memberships and
+1,987 nutrition rows (6,503 total). This sequence has already succeeded in the
+existing Neon database, as reported by the project owner; no reload is needed.
+`--load` is the explicit insert opt-in. Offline tests always
+mock connections, even when `DATABASE_URL` is set; the commands above are the
+intentional live integration checks. Exit code 0 indicates success (including a
+compatible empty database during verification); exit code 1 indicates a safe stop.
+
+The insert order is brands, categories, products, product_categories, nutrition.
+All inserts and their validation share one transaction; failures roll it back.
+After read-only preflight, a short table lock serializes writers and the loader
+rechecks schema/content before inserting. Timeouts stop safely if locks or queries
+cannot finish. No rows are deleted, replaced or updated. A populated database is
+accepted only when **every cell in every row** matches the cleaned CSVs, regardless
+of row order. Same-count changed data and partial loads stop for manual review.
+Comparisons preserve exact text, binary64 numeric values, timestamp instants and
+SQL NULL, and explicitly query counts, duplicate keys, all seven FKs, 83 leading-zero
+barcodes and 13 overlapping products. Every missing nutrient and category pair is
+also covered by the complete comparison. Identical reruns perform no inserts.
+
+No cleaned CSV is rewritten by the loader. The existing transformer validates and
+reuses identical outputs. Keep all five CSVs fixed during a load. If a connection
+fails around commit, the outcome can be uncertain; rerun read-only verification
+to determine whether the complete transaction committed. Never clear tables to retry.
+
+## Phase 7: SQL reporting and insights
+
+The final technical phase executes eight SQL reports against the populated Neon database.
+It runs a single read-only, repeatable-read transaction to ensure no data is modified.
+
+Run the reports from the repository root:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/run_sql_reports.py
+```
+
+This connects using the same `DATABASE_URL` in `.env` and exports the results to `reports/sql_results/`.
+The SQL file `sql/reports.sql` contains the queries demonstrating JOINs, aggregations, conditional counting (CASE WHEN), HAVING clauses, and PostgreSQL's PERCENTILE_CONT.
+See [Phase 7 validation](reports/phase7_validation.md) for the execution results and a comparison to the Phase 4 insights.
 
 ## Phase 5: PostgreSQL schema and ERD
 
@@ -28,14 +142,14 @@ Use your configured PostgreSQL role in place of `postgres`; let the client promp
 for a password if required. The database must be fresh. The schema runs in one
 transaction and intentionally fails if tables already exist, rather than hiding
 schema differences. It creates five empty tables and supporting indexes in `public`.
-It contains no record-loading commands. PostgreSQL was unavailable during Phase 5
-validation, so actual PostgreSQL execution remains unverified.
+It contains no record-loading commands. PostgreSQL was unavailable during the
+historical Phase 5 validation. The project owner subsequently executed this schema
+in Neon; independent live verification is tracked in the Phase 6 report.
 
 The product-to-nutrition relationship is exactly one-to-one at commit, enforced
 by reciprocal barcode FKs. A composite FK also requires each product's primary
 category to exist among its memberships. These two product-side FKs are deferred:
-the future Phase 6 loader must insert products, memberships and nutrition within
-one transaction. No loader is implemented here.
+the Phase 6 loader inserts products, memberships and nutrition within one transaction.
 
 Reproduce the ERD and run offline validation with the existing environment:
 
@@ -207,7 +321,7 @@ content-addressed backup under `data/backups/legacy_<hash>/`.
 Run from the project root in PowerShell. A real contact email is required
 for live requests; it is used in the User-Agent and saved extraction metadata.
 
-The `.venv` uses Python 3.12.4 and all ten Phase 1 dependencies from
+The `.venv` uses Python 3.12.4, the Phase 1 and Phase 6 dependencies from
 `requirements.txt`, plus the optional Phase 2 tools in `requirements-eda.txt`.
 Activate it normally; no `PYTHONPATH` workaround is needed:
 
@@ -225,7 +339,7 @@ The execution-policy command is needed when PowerShell blocks activation scripts
 it applies only to the current shell and does not change the user or machine policy.
 You can also run `.\.venv\Scripts\python.exe` directly without activating.
 The extraction script itself only needs `requests`; pandas and NumPy are also
-installed for later project phases. `requirements.txt` remains unchanged.
+installed for later project phases. Phase 6 adds the PostgreSQL loading dependencies.
 
 The same command resumes automatically. It will not request completed pages.
 The target is a stopping threshold: the last successful page is retained in
