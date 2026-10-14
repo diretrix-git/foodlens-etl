@@ -1,6 +1,6 @@
 # FoodLens: Food Nutrition Quality & Data Analysis ETL Pipeline
 
-**University data engineering project | Python · Pandas · Matplotlib · PostgreSQL · SQL · Jupyter · Neon**
+**University data analysis project | Python · Pandas · Matplotlib · PostgreSQL · SQL · Jupyter · Neon**
 
 FoodLens collects real food-product records from [Open Food Facts](https://world.openfoodfacts.org/), investigates their quality, preserves and cleans reported nutrition measurements, and organizes the results in PostgreSQL for reproducible analysis. It is a **data pipeline and analytical project**, not a food recommendation app or web dashboard.
 
