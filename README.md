@@ -1,5 +1,71 @@
 # FoodLens: Food Nutrition Quality & Data Analysis ETL Pipeline
 
+**University data engineering project | Python · Pandas · Matplotlib · PostgreSQL · SQL · Jupyter · Neon**
+
+FoodLens collects real food-product records from [Open Food Facts](https://world.openfoodfacts.org/), investigates their quality, preserves and cleans reported nutrition measurements, and organizes the results in PostgreSQL for reproducible analysis. It is a **data pipeline and analytical project**, not a food recommendation app or web dashboard.
+
+## Project at a glance
+
+| Metric | Result |
+| --- | ---: |
+| Source records | 2,000 across four categories |
+| Unique products | 1,987 (13 cross-category overlaps) |
+| Categories | 4: breakfast cereals, yogurts, biscuits, cereal bars |
+| Relational tables | 5 |
+| Total loaded database rows | 6,503 (including memberships and nutrition rows) |
+| Pandas analyses / exported charts | 5 / 5 |
+| Read-only SQL reports | 8 |
+| Offline automated tests | 89 passed in final submission validation |
+
+**Pipeline:** Open Food Facts API → preserved JSON and combined CSV → exploratory data analysis → Pandas cleaning and five CSV tables → Neon PostgreSQL → SQL reports.
+
+**What matters about data quality:** Missing nutrients stay missing, suspicious values are flagged rather than silently fixed, barcode strings are preserved, overlapping category memberships are retained, and strict per-100-g comparisons require a confirmed measurement basis.
+
+## Selected findings
+
+These describe the project's **nonrandom sample**, not all foods or a universal health ranking. Median per-100-g results use eligible, confirmed mass-basis measurements.
+
+| Analytical question | Finding |
+| --- | --- |
+| Highest median sugar | Biscuits: **26.00 g/100 g** (324 eligible category products) |
+| Highest median protein | Breakfast cereals: **9.40 g/100 g** (292 eligible category products) |
+| Highest protein per 100 kcal | Carrefour Sensation Skyr Nature: **19.37 g/100 kcal** |
+| Highest reported nutrition completeness | Breakfast cereals: **98.675%** |
+| Common Nutri-Score for biscuits | Grade **E**, 268 of 500 category memberships |
+
+![Median sugar across food categories](reports/figures/phase4_01_median_sugar.png)
+
+![Median protein across food categories](reports/figures/phase4_02_median_protein.png)
+
+### Relational database design
+
+![FoodLens five-table ERD](reports/erd.png)
+
+The schema consists of `brands`, `products`, `categories`, `product_categories` and `nutrition`. See [SQL schema](sql/schema.sql), [editable diagram](reports/erd.dbml), and [eight SQL reports](sql/reports.sql).
+
+## Explore and reproduce
+
+- **Read the project report:** [Final academic report](reports/FoodLens_Final_Report.md)
+- **View executed notebooks:** [Exploratory analysis](notebooks/01_eda.ipynb) · [Nutritional analysis](notebooks/02_data_analysis.ipynb)
+- **View actual database results:** [Eight saved SQL CSV reports](reports/sql_results/) · [SQL validation](reports/phase7_validation.md)
+- **Reproduce from the submission package:** [Submission and offline setup guide](SUBMISSION_README.md) · [Validation record](reports/submission_validation.md)
+
+**Important:** Some raw and cleaned datasets are intentionally excluded from Git. A GitHub clone alone does **not** reproduce the entire ETL pipeline. The separately generated `submission/FoodLens_Submission.zip` includes the required source snapshots and cleaned files. Obtain that package from the project owner or the academic submission, then follow `SUBMISSION_README.md`. The offline workflow does not need an Open Food Facts download or a live database; live PostgreSQL reproduction requires a separate database and your own credentials.
+
+If you already have the submission data in place and have installed the documented dependencies in Python 3.12, you can verify the saved results and run offline tests from the repository root:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/verify_saved_results.py
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+For full setup, notebook execution, extraction history and database-loading safeguards, see [submission instructions](SUBMISSION_README.md) and the detailed phase-by-phase technical reference below.
+
+---
+
+## Technical documentation by phase
+
+
 University semester project. Phase 1 implements extraction, source preservation,
 resumable pagination, and analytical exports. Phase 2 adds a read-only exploratory
 notebook. Phase 3B adds an offline five-table cleaning and transformation pipeline.
