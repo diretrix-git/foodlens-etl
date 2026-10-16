@@ -4,38 +4,24 @@ description: "Use for FoodLens semester-project work across Open Food Facts extr
 tools: [read, search, edit, execute, web]
 argument-hint: "Describe the FoodLens phase or deliverable to implement or validate."
 user-invocable: true
+include-custom-instructions: true
 ---
 
 You are the project agent for the FoodLens ETL semester project.
 
+Follow repository-root `AGENTS.md`, including its `HANDOVER.md` workflow and
+preservation rules. Use `HANDOVER.md` for current status; dated validation
+reports describe the state when each phase was completed.
+
 ## Project context
 
 FoodLens uses Open Food Facts product data for a nutrition-focused,
-reproducible ETL pipeline. The repository currently contains:
-
-- `src/download_dataset.py`: resilient category extraction, retries, backoff,
-  checkpoint recovery, atomic writes, raw page preservation, barcode handling,
-  per-category analytical exports, and offline combination.
-- `tests/test_download_dataset.py`: offline unit tests; live HTTP is forbidden
-  during tests.
-- `README.md`: extraction commands, category identifiers, artifact layout, and
-  recovery behavior.
-- `reports/phase1_validation.md`: read-only validation of the completed Phase 1.
-- `requirements.txt`: pinned Python dependencies.
-- `data/raw/`: original data and saved API page snapshots. Treat as immutable.
-- `data/processed/`: generated analytical outputs. Treat existing outputs as
-  immutable unless the user explicitly requests regeneration.
-- `notebooks/`: reserved for later EDA and analysis work.
-
-Phase 1 is complete for these verified Open Food Facts categories:
-
-- `breakfast-cereals`: 500 products
-- `yogurts`: 500 products
-- `biscuits`: 500 products
-- `cereal-bars`: 500 products
-
-The combined Phase 1 output contains 1,987 globally unique products from 2,000
-source records, with 13 overlapping barcodes and preserved category membership.
+reproducible ETL pipeline. All seven technical phases and the final academic
+submission are documented as complete. The executed EDA and analysis notebooks,
+five-table transformation, PostgreSQL schema and loader, and eight SQL reports
+are present. See `README.md` for the pipeline and `SUBMISSION_README.md` for
+offline reproduction. Some datasets are omitted from Git and included in the
+separate submission package.
 
 ## Capstone requirements
 
@@ -65,46 +51,20 @@ The complete project must demonstrate:
    objective, extraction, EDA, quality issues, transformations, database
    design, ETL, analysis, insights, challenges, and conclusion.
 
-## Non-negotiable safety and preservation rules
-
-- Inspect the repository, current artifacts, Git status, and relevant tests
-  before changing anything.
-- Never modify, delete, rewrite, clean, or silently regenerate existing raw
-  JSON, saved API responses, manifests, checkpoints, backups, or original
-  nutritional values.
-- Do not make live API requests during implementation or testing unless the
-  user explicitly asks for extraction and provides approval. Prefer mocked
-  responses, temporary directories, saved snapshots, and offline commands.
-- Never commit, push, create releases, or alter Git history without explicit
-  user approval for that action.
-- Do not expose credentials, contact emails, API tokens, local absolute paths,
-  or secrets in source, reports, notebooks, SQL, or documentation. Use
-  environment variables and redacted examples.
-- Do not add database infrastructure, EDA, cleaning, visualization, or Phase 2+
-  work when the user asks for a narrower Phase 1 task.
-- Do not treat missing nutrition values as errors by default. Measure and
-  document missingness before choosing a transformation.
-- Preserve barcode strings exactly, including leading zeroes. Deduplicate only
-  with an explicit, documented policy.
-- Use separate generated outputs for experiments and validation; do not
-  overwrite source artifacts.
-
 ## Working method
 
 1. Identify the requested phase, deliverable, acceptance criteria, and files
    involved.
-2. Inspect the current implementation and artifacts before proposing edits.
+2. Inspect the current implementation and artifacts before editing.
 3. Prefer existing helpers, schemas, checkpoint logic, and test patterns.
-4. For Python changes, maintain Python 3.12 compatibility and use the repaired
-   `.venv` interpreter.
-5. Add or update focused offline tests for every behavior change. Tests must
-   fail safely if a real HTTP request is attempted.
-6. Run the smallest relevant validation first, then the complete offline suite
-   when the change affects shared extraction or data logic.
-7. Update directly related documentation and record assumptions, source
+4. For Python changes, maintain Python 3.12 compatibility. Add focused offline
+   tests for behavior changes; tests must block real HTTP requests.
+5. Run the smallest relevant validation first, then the complete offline suite
+   when shared extraction or data logic changes.
+6. Update directly related documentation and record assumptions, source
    identifiers, formulas, and provenance.
-8. Review `git diff`, `git diff --check`, and `git status` before reporting.
-9. Report files changed, commands run, actual results, data-preservation
+7. Review `git diff`, `git diff --check`, and `git status` before reporting.
+8. Report files changed, commands run, actual results, data-preservation
    evidence, and any unresolved risks.
 
 ## Phase-specific guidance

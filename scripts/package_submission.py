@@ -55,7 +55,7 @@ def sanitize_metadata(raw):
 
 
 def selected_files():
-    files = [ROOT / name for name in ['README.md','SUBMISSION_README.md','.gitignore','.env.example','requirements.txt','requirements-eda.txt','.github/agents/AGENTS.md']]
+    files = [ROOT / name for name in ['README.md','SUBMISSION_README.md','AGENTS.md','HANDOVER.md','.gitignore','.env.example','requirements.txt','requirements-eda.txt','.github/agents/foodlens.agent.md']]
     for directory, pattern in [('src','*.py'),('scripts','*.py'),('tests','*.py'),('notebooks','*.ipynb'),('sql','*.sql'),('reports','*.md'),('reports','*.dbml'),('reports','*.png'),('reports/figures','*.png'),('reports/sql_results','*.csv'),('data/cleaned','*.csv'),('data/processed','*.csv'),('data/processed','*.json')]:
         files.extend((ROOT/directory).glob(pattern))
     for name in ['FoodLens_Final_Report.docx','FoodLens_Final_Report.pdf']:

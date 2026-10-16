@@ -43,12 +43,13 @@ These describe the project's **nonrandom sample**, not all foods or a universal 
 
 The schema consists of `brands`, `products`, `categories`, `product_categories` and `nutrition`. See [SQL schema](sql/schema.sql), [editable diagram](reports/erd.dbml), and [eight SQL reports](sql/reports.sql).
 
-## Explore and reproduce
+## Documentation map
 
 - **Read the project report:** [Final academic report](reports/FoodLens_Final_Report.md)
+- **Check the implemented cleaning rules and data dictionary:** [Phase 3 validation](reports/phase3_validation.md)
 - **View executed notebooks:** [Exploratory analysis](notebooks/01_eda.ipynb) · [Nutritional analysis](notebooks/02_data_analysis.ipynb)
 - **View actual database results:** [Eight saved SQL CSV reports](reports/sql_results/) · [SQL validation](reports/phase7_validation.md)
-- **Reproduce from the submission package:** [Submission and offline setup guide](SUBMISSION_README.md) · [Validation record](reports/submission_validation.md)
+- **Reproduce and review validation evidence:** [Submission and offline setup guide](SUBMISSION_README.md) · [Final validation record](reports/submission_validation.md) · [Phase reports](reports/)
 
 **Important:** Some raw and cleaned datasets are intentionally excluded from Git. A GitHub clone alone does **not** reproduce the entire ETL pipeline. The separately generated `submission/FoodLens_Submission.zip` includes the required source snapshots and cleaned files. Obtain that package from the project owner or the academic submission, then follow `SUBMISSION_README.md`. The offline workflow does not need an Open Food Facts download or a live database; live PostgreSQL reproduction requires a separate database and your own credentials.
 
