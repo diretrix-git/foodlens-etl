@@ -1,0 +1,6 @@
+# Published CSV fields can contain meaningful trailing spaces inside quotes.
+# Keep published bytes identical to MANIFEST.json across platforms.
+repro_data/** -text whitespace=cr-at-eol
+repro_data/cleaned/*.csv whitespace=cr-at-eol,-trailing-space
+repro_data/processed/*.csv whitespace=cr-at-eol,-trailing-space
+repro_data/raw/*.csv whitespace=cr-at-eol,-trailing-space

@@ -1,0 +1,13 @@
+{
+  "configuration": {
+    "query_parameters": {
+      "categories_tags_en": "cereal-bars",
+      "fields": "code,product_name,brands,categories_tags,nutriments,nutriscore_grade,nova_group",
+      "page_size": 100
+    },
+    "source_url": "https://world.openfoodfacts.org/api/v2/search"
+  },
+  "created_at_utc": "2026-10-09T04:42:56.491403+00:00",
+  "extraction_id": "ed4f16ea3c02f6ab",
+  "schema_version": 1
+}

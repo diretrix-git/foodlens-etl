@@ -49,18 +49,43 @@ The schema consists of `brands`, `products`, `categories`, `product_categories` 
 - **Check the implemented cleaning rules and data dictionary:** [Phase 3 validation](reports/phase3_validation.md)
 - **View executed notebooks:** [Exploratory analysis](notebooks/01_eda.ipynb) · [Nutritional analysis](notebooks/02_data_analysis.ipynb)
 - **View actual database results:** [Eight saved SQL CSV reports](reports/sql_results/) · [SQL validation](reports/phase7_validation.md)
-- **Reproduce and review validation evidence:** [Submission and offline setup guide](SUBMISSION_README.md) · [Final validation record](reports/submission_validation.md) · [Phase reports](reports/)
+- **Reproduce from a public clone:** See the instructions below and `repro_data/README.md` for data provenance and ODbL terms. [Final validation record](reports/submission_validation.md) · [Phase reports](reports/)
+- **Review the separate academic archive:** [Submission instructions](SUBMISSION_README.md)
 
-**Important:** Some raw and cleaned datasets are intentionally excluded from Git. A GitHub clone alone does **not** reproduce the entire ETL pipeline. The separately generated `submission/FoodLens_Submission.zip` includes the required source snapshots and cleaned files. Obtain that package from the project owner or the academic submission, then follow `SUBMISSION_README.md`. The offline workflow does not need an Open Food Facts download or a live database; live PostgreSQL reproduction requires a separate database and your own credentials.
+## Reproduce from a public clone, offline
 
-If you already have the submission data in place and have installed the documented dependencies in Python 3.12, you can verify the saved results and run offline tests from the repository root:
+The tracked `repro_data/` snapshot contains all 45 inputs for EDA, cleaning,
+offline loading checks, analysis and tests. The working `data/` directory remains
+ignored so private originals are never replaced by Git. Use a **fresh clone** and
+Python 3.12. From the repository root on Windows PowerShell:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/verify_saved_results.py
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-eda.txt
+.\.venv\Scripts\python.exe -m pip check
+.\.venv\Scripts\python.exe scripts/prepare_repro_data.py --verify
+.\.venv\Scripts\python.exe scripts/prepare_repro_data.py --install
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -m src.clean_transform
+.\.venv\Scripts\python.exe -m src.load_postgres --offline
+.\.venv\Scripts\python.exe scripts/validate_phase5.py
+.\.venv\Scripts\python.exe scripts/verify_saved_results.py
+.\.venv\Scripts\python.exe scripts/execute_eda.py
+.\.venv\Scripts\python.exe scripts/execute_analysis.py
 ```
 
-For full setup, notebook execution, extraction history and database-loading safeguards, see [submission instructions](SUBMISSION_README.md) and the detailed phase-by-phase technical reference below.
+The installer verifies the snapshot and refuses to overwrite any differing file
+already in `data/`. Run this sequence in a disposable clone: the two notebook
+executors rewrite notebook outputs, and the analysis executor rewrites chart
+exports. The commands use saved data and mocked connections; they make no live
+Open Food Facts request or database connection. Dependency installation needs a
+package index or wheel cache. On other operating systems, use
+`python3.12 -m venv .venv` and `.venv/bin/python` in place of the Windows
+interpreter path; that platform sequence has not been checked here. For
+archive-specific verification
+and optional loading into **your own fresh** PostgreSQL database, see
+[academic submission instructions](SUBMISSION_README.md). The detailed phase
+reference follows below.
 
 ---
 
@@ -84,9 +109,10 @@ All seven technical phases are implemented. See the complete editable
 [final report](reports/FoodLens_Final_Report.md),
 [submission instructions](SUBMISSION_README.md), and
 [final verification record](reports/submission_validation.md).
-The submission package is generated separately under `submission/`; it includes
-the required saved sources and cleaned datasets that Git ignores. A Git checkout
-alone does not contain those inputs. No fresh API download is required.
+The existing academic submission package is separate under `submission/`; it
+includes its own saved sources and cleaned datasets. The public Git snapshot is
+under `repro_data/` and can be installed into a fresh clone without a new API
+download. The original working `data/` directory remains ignored.
 
 The final audit corrected Phase 7 narrative figures for Q6-Q8 against the existing
 SQL exports. Verify all eight saved results without connecting to a database:
@@ -360,7 +386,9 @@ missingness, exclusions, source limitations and executed validation results.
 Open `notebooks/01_eda.ipynb` using the project's `.venv` Python kernel. It reads
 `data/processed/food_products_analysis_combined_725f8a023f0f8ee6.csv` and checks its
 metadata, saved pages, and category checkpoints. Keep the complete Phase 1 data
-directory available locally; source data are intentionally excluded from Git.
+directory available locally. The working `data/` files are ignored by Git; the
+reviewed public copy is tracked under `repro_data/` and installed by the command
+near the top of this README in a fresh clone.
 The notebook runs with its working directory at either the repository root or
 `notebooks/`. No absolute machine paths or live API access are required.
 

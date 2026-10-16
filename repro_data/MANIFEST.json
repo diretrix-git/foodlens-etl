@@ -1,0 +1,230 @@
+{
+  "format_version": 1,
+  "files": [
+    {
+      "path": "cleaned/brands.csv",
+      "bytes": 15198,
+      "sha256": "fdc10c0761c5ad7563784cb6fa6ce290c17c510f1da74adff88c23c9f0e5cbde"
+    },
+    {
+      "path": "cleaned/categories.csv",
+      "bytes": 120,
+      "sha256": "e411db0b835028ad5a46b3e96f703239eee48a625b3937c5269402323eac7d04"
+    },
+    {
+      "path": "cleaned/nutrition.csv",
+      "bytes": 419860,
+      "sha256": "2ce5887ab59f9f6a69a6310366092b8fd51c0a9fad68a1fd525471ca81f35ff3"
+    },
+    {
+      "path": "cleaned/product_categories.csv",
+      "bytes": 51195,
+      "sha256": "d10e12fb8dc6c9be4f10cc367623f14e7766cbcfdded3a2282da47e0a75e4dea"
+    },
+    {
+      "path": "cleaned/products.csv",
+      "bytes": 604820,
+      "sha256": "9bf2bb50247d0c376efea908a3ab5cc35a5a47dd9179e9bc092d3e943127c540"
+    },
+    {
+      "path": "processed/food_products_analysis_255549a7a8a480c0.csv",
+      "bytes": 296805,
+      "sha256": "3045df76259cfba6d0be6f37b84eb764937e8cb9331c8373aaea15c5ecce6a18"
+    },
+    {
+      "path": "processed/food_products_analysis_34e0ad749f6a0fa6.csv",
+      "bytes": 249319,
+      "sha256": "4cdb6780f4e5abb9f380f764aebcb6df9ea4219b9b98d53466ed79f436ac4f6e"
+    },
+    {
+      "path": "processed/food_products_analysis_a7cac53fa4872087.csv",
+      "bytes": 284348,
+      "sha256": "e18a055133422fdb3048585d0b63d55e0ba7d443539556394a331b0dcce804ba"
+    },
+    {
+      "path": "processed/food_products_analysis_combined_725f8a023f0f8ee6.csv",
+      "bytes": 1119572,
+      "sha256": "c7831ff6c476c8511365a543411d19ba090c65d89f51db537715f1b905d8776c"
+    },
+    {
+      "path": "processed/food_products_analysis_combined_725f8a023f0f8ee6.json",
+      "bytes": 1961,
+      "sha256": "e7ad78f9a631c89055f81ac8af2a91eeace150f26d48aad6a20bf76abf108e00"
+    },
+    {
+      "path": "processed/food_products_analysis_ed4f16ea3c02f6ab.csv",
+      "bytes": 247601,
+      "sha256": "241c447180dbf1791a712bad6c64829a44c7a75e70711261bfa496809506f865"
+    },
+    {
+      "path": "raw/extractions/255549a7a8a480c0/barcode_issues.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "raw/extractions/255549a7a8a480c0/checkpoint.json",
+      "bytes": 2397,
+      "sha256": "2e90da8c8202395f0ab3704b461a8a2b749a1ac8afd9ae8a0a3c60f7262f2e91"
+    },
+    {
+      "path": "raw/extractions/255549a7a8a480c0/manifest.json",
+      "bytes": 417,
+      "sha256": "f2ef8af55d7338d6d3eb166c8cd3bf7a173ab8eb9df8ea607e483797a5a0ce9c"
+    },
+    {
+      "path": "raw/extractions/255549a7a8a480c0/pages/page_000001.json",
+      "bytes": 436575,
+      "sha256": "e35a1d5dbe7e26ab25bfc2e4aa58662bb1019a75f96cf553522f891a1ca71555"
+    },
+    {
+      "path": "raw/extractions/255549a7a8a480c0/pages/page_000002.json",
+      "bytes": 416444,
+      "sha256": "d4683ac298c72c446eb5e1ac9fda2383c6cdfca3c687e82fef423152df1f59e0"
+    },
+    {
+      "path": "raw/extractions/255549a7a8a480c0/pages/page_000003.json",
+      "bytes": 390082,
+      "sha256": "6856800c81bb53b7467bd4305f84c4a85298242bbeedb695b6ce96d3e181eebe"
+    },
+    {
+      "path": "raw/extractions/255549a7a8a480c0/pages/page_000004.json",
+      "bytes": 420214,
+      "sha256": "bb8cccb4d476d2a7a47fbca9f943ca6d582d48adc87f916831db94de37fbba73"
+    },
+    {
+      "path": "raw/extractions/255549a7a8a480c0/pages/page_000005.json",
+      "bytes": 406640,
+      "sha256": "5507f61b105796464ed0d72de765b95784db1018484205938a6aa5484d2fd63b"
+    },
+    {
+      "path": "raw/extractions/34e0ad749f6a0fa6/barcode_issues.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "raw/extractions/34e0ad749f6a0fa6/checkpoint.json",
+      "bytes": 2388,
+      "sha256": "ccf32be74e5070db2aa68145501555df39e266af4899e20b234cd5de17f250c3"
+    },
+    {
+      "path": "raw/extractions/34e0ad749f6a0fa6/manifest.json",
+      "bytes": 408,
+      "sha256": "2af6797e49dddde3db93384996aafd3ae197723186295df61934a3907479dd64"
+    },
+    {
+      "path": "raw/extractions/34e0ad749f6a0fa6/pages/page_000001.json",
+      "bytes": 395150,
+      "sha256": "a97b070a96f743ad48e4de3b7a05197bf76bd5abfa6f69f3f28515e3ac4cf8fd"
+    },
+    {
+      "path": "raw/extractions/34e0ad749f6a0fa6/pages/page_000002.json",
+      "bytes": 383801,
+      "sha256": "4faeeae2ba544a93b32a506917c3504d88f172f6a541fa95bfe524dada8e305c"
+    },
+    {
+      "path": "raw/extractions/34e0ad749f6a0fa6/pages/page_000003.json",
+      "bytes": 371032,
+      "sha256": "f0fc59d9f0c84e25b29af8aa17d67a5b731f28a9e06ab9fc2e341d6e1391d4d8"
+    },
+    {
+      "path": "raw/extractions/34e0ad749f6a0fa6/pages/page_000004.json",
+      "bytes": 394685,
+      "sha256": "70a8d79836aa3d22c17fe4dfb23b56a38eb53dcd02458d666ae64576d6f9e71f"
+    },
+    {
+      "path": "raw/extractions/34e0ad749f6a0fa6/pages/page_000005.json",
+      "bytes": 366850,
+      "sha256": "daf0de4b91f0087366a9eb3a254b0e66110e77a5c80e907afaa22c55ecac1825"
+    },
+    {
+      "path": "raw/extractions/a7cac53fa4872087/barcode_issues.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "raw/extractions/a7cac53fa4872087/checkpoint.json",
+      "bytes": 2387,
+      "sha256": "29190bfe3aabd1652ded0b5560b77d8974175023f058dca28de3dca908f9fb71"
+    },
+    {
+      "path": "raw/extractions/a7cac53fa4872087/manifest.json",
+      "bytes": 407,
+      "sha256": "ad48d1cd92deb1edd39deb6e62044f84fbbc3358ae083b9af4fdcaeee54a5a94"
+    },
+    {
+      "path": "raw/extractions/a7cac53fa4872087/pages/page_000001.json",
+      "bytes": 364318,
+      "sha256": "d3ee05fadbf5fe5f61f37330df3c6d01738be3433f6c4cda90140c153f72c45f"
+    },
+    {
+      "path": "raw/extractions/a7cac53fa4872087/pages/page_000002.json",
+      "bytes": 350776,
+      "sha256": "724bda1729a5b62c771072d53e5785364ff18a4705a52af5a1c3709abae57303"
+    },
+    {
+      "path": "raw/extractions/a7cac53fa4872087/pages/page_000003.json",
+      "bytes": 334767,
+      "sha256": "69af403bd8f9915bad2dd626880e3bd7b7907870ba19e9406f74a688bb174236"
+    },
+    {
+      "path": "raw/extractions/a7cac53fa4872087/pages/page_000004.json",
+      "bytes": 346035,
+      "sha256": "56b6b82eb3e890dce9bfdc76329eb61d26b20161012abf24a0b609f3de30e376"
+    },
+    {
+      "path": "raw/extractions/a7cac53fa4872087/pages/page_000005.json",
+      "bytes": 342761,
+      "sha256": "af1b57546fffeb5d0e5bea3f32f5658267ad930ce8b1e355d47a20fdca55d8ee"
+    },
+    {
+      "path": "raw/extractions/ed4f16ea3c02f6ab/barcode_issues.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "raw/extractions/ed4f16ea3c02f6ab/checkpoint.json",
+      "bytes": 2391,
+      "sha256": "53b8287869b9ce17ecb084f4f393fd970b94169e831a2b0e59d86c5468a874fd"
+    },
+    {
+      "path": "raw/extractions/ed4f16ea3c02f6ab/manifest.json",
+      "bytes": 411,
+      "sha256": "2b10fd527930ace13ebeb13d3e07abd2c25f1909c74ee2bd243c912ee32a25d2"
+    },
+    {
+      "path": "raw/extractions/ed4f16ea3c02f6ab/pages/page_000001.json",
+      "bytes": 374562,
+      "sha256": "45094f88746a6e1b9a871760c2d37faf0beba3b5b8c5013d5ba3fea12bb415e8"
+    },
+    {
+      "path": "raw/extractions/ed4f16ea3c02f6ab/pages/page_000002.json",
+      "bytes": 357557,
+      "sha256": "cc31288b1f21122a9c303790bca699dab7986c7984573e7409625ee19fa84a97"
+    },
+    {
+      "path": "raw/extractions/ed4f16ea3c02f6ab/pages/page_000003.json",
+      "bytes": 360274,
+      "sha256": "4e04a3eaa0f5f13b6171865bdda0d7359d168bb738b69ec37c64a62d8b5b154c"
+    },
+    {
+      "path": "raw/extractions/ed4f16ea3c02f6ab/pages/page_000004.json",
+      "bytes": 353266,
+      "sha256": "5054359fc595db3a4f5fbb08b57e7af227cc2851d115d5ac983cecd5871fa844"
+    },
+    {
+      "path": "raw/extractions/ed4f16ea3c02f6ab/pages/page_000005.json",
+      "bytes": 346560,
+      "sha256": "1cc5e2cd928be95813ef5872aabbd04f1238dce088174fb1b913d59effcfb690"
+    },
+    {
+      "path": "raw/food_products_extracted.csv",
+      "bytes": 120830,
+      "sha256": "add260f3b0cbd3e43088092cbae2bd28372d433ee07cd1f402106c556d8491ac"
+    },
+    {
+      "path": "raw/food_products_raw.json",
+      "bytes": 396515,
+      "sha256": "0013c5a0eaf9fdee3832535a72c745793d38c4e3016726c6458cb5e435415d67"
+    }
+  ]
+}

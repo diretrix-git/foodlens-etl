@@ -19,9 +19,10 @@ FoodLens uses Open Food Facts product data for a nutrition-focused,
 reproducible ETL pipeline. All seven technical phases and the final academic
 submission are documented as complete. The executed EDA and analysis notebooks,
 five-table transformation, PostgreSQL schema and loader, and eight SQL reports
-are present. See `README.md` for the pipeline and `SUBMISSION_README.md` for
-offline reproduction. Some datasets are omitted from Git and included in the
-separate submission package.
+are present. See `README.md` for the pipeline and public-clone offline setup,
+`repro_data/README.md` for public data provenance and license, and
+`SUBMISSION_README.md` for the separate academic archive. The tracked
+`repro_data/` copy is sanitized; the ignored `data/` originals remain local.
 
 ## Capstone requirements
 

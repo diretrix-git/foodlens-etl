@@ -1,0 +1,84 @@
+{
+  "analysis_columns": [
+    "barcode",
+    "product_name",
+    "brands",
+    "categories",
+    "energy_kcal_100g",
+    "energy_kj_100g",
+    "protein_g_100g",
+    "carbohydrates_g_100g",
+    "sugars_g_100g",
+    "fat_g_100g",
+    "saturated_fat_g_100g",
+    "fiber_g_100g",
+    "salt_g_100g",
+    "nutriscore_grade",
+    "nova_group",
+    "source_page",
+    "source_record_index",
+    "extracted_at_utc",
+    "source_url",
+    "record_origin",
+    "extraction_id",
+    "extraction_category",
+    "extraction_categories",
+    "category_membership_count"
+  ],
+  "categories": [
+    "breakfast-cereals",
+    "yogurts",
+    "biscuits",
+    "cereal-bars"
+  ],
+  "category_counts": {
+    "biscuits": {
+      "duplicate_barcodes": 0,
+      "invalid_barcodes": 0,
+      "missing_barcodes": 0,
+      "raw_records": 500,
+      "unique_products": 500
+    },
+    "breakfast-cereals": {
+      "duplicate_barcodes": 0,
+      "invalid_barcodes": 0,
+      "missing_barcodes": 0,
+      "raw_records": 500,
+      "unique_products": 500
+    },
+    "cereal-bars": {
+      "duplicate_barcodes": 0,
+      "invalid_barcodes": 0,
+      "missing_barcodes": 0,
+      "raw_records": 500,
+      "unique_products": 500
+    },
+    "yogurts": {
+      "duplicate_barcodes": 0,
+      "invalid_barcodes": 0,
+      "missing_barcodes": 0,
+      "raw_records": 500,
+      "unique_products": 500
+    }
+  },
+  "category_issues": {
+    "biscuits": [],
+    "breakfast-cereals": [],
+    "cereal-bars": [],
+    "yogurts": []
+  },
+  "missing_barcodes": 0,
+  "output_csv": "data/processed/food_products_analysis_combined_725f8a023f0f8ee6.csv",
+  "output_csv_sha256": "c7831ff6c476c8511365a543411d19ba090c65d89f51db537715f1b905d8776c",
+  "overlap_product_count": 13,
+  "overlapping_products": 13,
+  "raw_records": 2000,
+  "schema_version": 1,
+  "unique_products": 1987,
+  "unique_products_by_category": {
+    "biscuits": 500,
+    "breakfast-cereals": 500,
+    "cereal-bars": 500,
+    "yogurts": 500
+  }
+}

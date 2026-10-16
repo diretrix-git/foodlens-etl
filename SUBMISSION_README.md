@@ -1,4 +1,8 @@
-# FoodLens Submission and Reproducibility
+# FoodLens Academic Submission Package
+
+This guide applies to the existing separate submission folder and ZIP. For a
+public GitHub clone, use the [clone setup in README](README.md#reproduce-from-a-public-clone-offline).
+Its public data notice is at `repro_data/README.md` in the Git repository.
 
 The seven technical phases are complete. Start with
 `reports/FoodLens_Final_Report.md` and `reports/submission_validation.md`.
@@ -14,15 +18,16 @@ charts, eight actual SQL result CSVs, the final report and saved datasets.
 `README.md` preserves detailed phase instructions; use the offline sequence below
 for submission review instead of its live extraction examples.
 
-The data files are deliberately included separately from Git: `.gitignore` excludes
-raw and processed data, extraction checkpoints and cleaned CSVs. There are 45
-packaged data files: 20 saved response pages, four checkpoints, four manifests,
-four barcode audit files, two legacy source fixtures, six processed files and
-five cleaned CSVs. The per-category processed CSVs are needed by the EDA notebook's
+The archive includes its own copies of the inputs. The working `data/` directory
+remains ignored by Git, while a reviewed public copy is tracked separately under
+`repro_data/`. The archive has 45 data files: 20 saved response pages, four
+checkpoints, four manifests, four barcode audit files, two legacy source
+fixtures, six processed files and five cleaned CSVs. The per-category
+processed CSVs are needed by the EDA notebook's
 checksum assertions. The two legacy files are needed by existing extraction tests.
 Backups, lock and cooldown state are unnecessary for offline reproduction.
 
-Request metadata contact emails are redacted in submission copies only. The 20
+Request metadata contact emails were redacted in these submission copies. The 20
 response payloads and their canonical hashes are unchanged, as are every source
 and cleaned CSV. Original repository datasets were not edited. A file manifest
 records the bytes actually submitted. No `.env`, credentials, virtual environment,

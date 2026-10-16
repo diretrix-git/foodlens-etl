@@ -1,0 +1,76 @@
+{
+  "analysis_columns": [
+    "barcode",
+    "product_name",
+    "brands",
+    "categories",
+    "energy_kcal_100g",
+    "energy_kj_100g",
+    "protein_g_100g",
+    "carbohydrates_g_100g",
+    "sugars_g_100g",
+    "fat_g_100g",
+    "saturated_fat_g_100g",
+    "fiber_g_100g",
+    "salt_g_100g",
+    "nutriscore_grade",
+    "nova_group",
+    "source_page",
+    "source_record_index",
+    "extracted_at_utc",
+    "source_url",
+    "record_origin",
+    "extraction_id"
+  ],
+  "analysis_csv": "data/processed/food_products_analysis_255549a7a8a480c0.csv",
+  "analysis_csv_sha256": "3045df76259cfba6d0be6f37b84eb764937e8cb9331c8373aaea15c5ecce6a18",
+  "barcode_policy": "Exact ASCII digit strings, length 8-14; no checksum test or padding. First occurrence wins; all raw records retained.",
+  "completed_pages": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "configuration": {
+    "query_parameters": {
+      "categories_tags_en": "breakfast-cereals",
+      "fields": "code,product_name,brands,categories_tags,nutriments,nutriscore_grade,nova_group",
+      "page_size": 100
+    },
+    "source_url": "https://world.openfoodfacts.org/api/v2/search"
+  },
+  "error": null,
+  "extraction_id": "255549a7a8a480c0",
+  "next_page": 6,
+  "nutrient_policy": "API _100g values only; g except energy (kcal/kJ). Missing, negative or non-finite values are blank; no imputation or serving conversion.",
+  "page_response_sha256": {
+    "1": "89da67d7b8a311ccdc9ceb3d393bf633511ba5d0952bfe75ecc41a366a4128f6",
+    "2": "57618159cbeca7968487475d027b56cd034ecee1258ec8f7d9e9d1992a2f117d",
+    "3": "320421c479a0b13070dad77798aa3bf33230c68347aa5da81fa98c485f1624d1",
+    "4": "e585711036cff8056fe48c2db247d99bb26567b5f183fe536fee825783267a33",
+    "5": "0dc222b91b2a448edc8a90731d5fa00b36e21073c576029a55a4b9831e37f356"
+  },
+  "reason": "target_reached",
+  "request_policy": {
+    "backoff_seconds": 10,
+    "interval_seconds": 10,
+    "max_pages": 20,
+    "max_retries": 3,
+    "max_wait_seconds": 300,
+    "timeout_seconds": 45,
+    "user_agent": "FoodLensStudentProject/2.0 ([CONTACT REDACTED])"
+  },
+  "row_counts": {
+    "duplicate_barcodes": 0,
+    "invalid_barcodes": 0,
+    "missing_barcodes": 0,
+    "raw_records": 500,
+    "unique_products": 500
+  },
+  "schema_version": 1,
+  "source_exhausted": false,
+  "status": "complete",
+  "target_unique_products": 500,
+  "updated_at_utc": "2026-10-09T04:27:08.106706+00:00"
+}
