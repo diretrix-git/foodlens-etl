@@ -1,6 +1,26 @@
 # FoodLens handover
 
-Newest entry: 16 October 2026. Prepend future dated entries and prune superseded detail; keep this a current-state record.
+Newest entry: 5 November 2026. Prepend future dated entries and prune superseded detail; keep this a current-state record.
+
+## 5 November 2026 - Source-backed documentation review
+
+### Done
+- Added a concise recruiter entry and `docs/source-backed-claims.md` with pinned source/test references, ownership boundaries and public-disclosure limits.
+- Clarified that snapshot counts and the 16 October validation record are historical evidence or current source expectations, not checks repeated in this review.
+- Distinguished per-file atomic publication from a multi-file transaction, and the fixed-snapshot PostgreSQL initial loader from a general incremental system.
+
+### In progress
+- Documentation changes are prepared for review. Branch publication and merge status must be checked separately.
+
+### Broken
+- Runtime and test status were not reverified. This documentation-only review ran no application, pipeline, tests, live API or database operations.
+
+### Next
+- Review the pinned claims and documentation diff. Reproduce only in a disposable clone using the existing guide if fresh execution evidence is needed.
+
+### Do not touch
+- Preserve ignored `data/` originals and metadata, `repro_data/` bytes and manifests, notebooks, SQL, saved reports, `submission/` and the existing archive.
+- Keep credentials and original request contact metadata out of public materials. Do not regenerate outputs or run live API/database operations as part of this documentation review.
 
 ## 16 October 2026 — Public reproducibility release
 
