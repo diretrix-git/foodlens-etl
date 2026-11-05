@@ -4,6 +4,12 @@
 
 FoodLens collects real food-product records from [Open Food Facts](https://world.openfoodfacts.org/), investigates their quality, preserves and cleans reported nutrition measurements, and organizes the results in PostgreSQL for reproducible analysis. It is a **data pipeline and analytical project**, not a food recommendation app or web dashboard.
 
+## Recruiter entry point
+
+A university ETL project demonstrating recoverable extraction, provenance, conservative nutrition-quality rules, normalized tables and verified PostgreSQL initial loading. Start with the [source-backed claims ledger](docs/source-backed-claims.md) for pinned implementation and test evidence.
+
+The figures below describe the fixed historical project snapshot. They are not a new API extraction, database load or test run. This documentation review did not run the pipeline or tests. File writes are atomic per file, and the loader handles an explicitly authorized initial load of the fixed snapshot, not general incremental synchronization. The existing reproduction guide follows unchanged.
+
 ## Project at a glance
 
 | Metric | Result |
@@ -15,7 +21,7 @@ FoodLens collects real food-product records from [Open Food Facts](https://world
 | Total loaded database rows | 6,503 (including memberships and nutrition rows) |
 | Pandas analyses / exported charts | 5 / 5 |
 | Read-only SQL reports | 8 |
-| Offline automated tests | 89 passed in final submission validation |
+| Offline automated tests | Historical: 89 at submission; 92 recorded on 16 October 2026 in [HANDOVER.md](HANDOVER.md) |
 
 **Pipeline:** Open Food Facts API → preserved JSON and combined CSV → exploratory data analysis → Pandas cleaning and five CSV tables → Neon PostgreSQL → SQL reports.
 
